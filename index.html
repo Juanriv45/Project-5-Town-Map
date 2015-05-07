@@ -1,20 +1,38 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style type="text/css">
-      html, body, #map-canvas { height: 100%; margin: 0; padding: 0;}
+      html, body, #map-canvas { height: 500px; width:100%; margin: 0; padding: 0;};
     </style>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBPwcTuwlLneATJK1_7h1BpjHh_2QwU08k"></script>
-    <script type="text/javascript" src="js/knockout.js"></script>
-    <script type="text/javascript" src="js/app.js"></script>
+
   </head>
   <body>
-
-    <div id="map-canvas"></div>
-    <div>
-      <form data-bind="submit:requestData">
-        <label for="street">Street: </label><input type="text" data-bind="value: streetStr">
-        <button type="submit">Submit</button>
-      </form></div>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">Top Row</div>
+      </div>
+      <div class="row">
+        <div>
+          <form class="col-md-4" data-bind="submit:requestData">
+            <label for="street">Street: </label><input type="text" data-bind="value: streetStr">
+            <button type="submit">Submit</button>
+          </form>
+        </div>
+        <div class ="col-md-8">
+          <div  id="map-canvas"></div>
+        </div>
+      </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script type="text/javascript" src="js/knockout.js"></script>
+    <script type="text/javascript" src="js/bootstrap.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
+    </style>
   </body>
 </html>
