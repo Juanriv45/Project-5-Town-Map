@@ -2,7 +2,7 @@
 
 var dallas = new google.maps.LatLng(32.7815617,-96.7928802);
 
-var locations = [
+var LocationDatas = [
     { name:"Angry Dog",
       LatLng: new google.maps.LatLng(32.782877,-96.783548)
     },
@@ -14,36 +14,40 @@ var locations = [
     }
 ];
 
-var marker;
-var map;
+var LocationData = [
+    [32.782877,-96.783548, "Angry Dog" ],
+    [32.772802,-96.831495, "Chicken Scratch" ],
+    [32.842388,-96.772196, "Twisted Root" ]
+];
 
 function initialize() {
-  var mapOptions = {
-    zoom: 12,
-    center: dallas
-  };
 
-  map = new google.maps.Map(document.getElementById('map-canvas'),
-          mapOptions);
+  var map = new google.maps.Map(document.getElementById('map-canvas'));
+  var bounds = new google.maps.LatLngBounds();
+  var infowindow = new google.maps.InfoWindow();
 
-for (i = 0; i < locations.length; i++) {
-  marker = new google.maps.Marker({
-    map:map,
-    draggable:false,
-    animation: google.maps.Animation.DROP,
-    position: locations[i].LatLng
-  });
-}
-  google.maps.event.addListener(marker, 'click', toggleBounce);
-}
+  for (var i in LocationData) {
+    var p = LocationData[i];
+    var latlng = new google.maps.LatLng(p[0], p[1]);
+    bounds.extend(latlng);
 
-function toggleBounce() {
+    var marker = new google.maps.Marker({
+      position: latlng,
+      map: map,
+      title: p[2]
+    });
 
-  if (marker.getAnimation() != null) {
-    marker.setAnimation(null);
-  } else {
-    marker.setAnimation(google.maps.Animation.BOUNCE);
+    $(document).ready( function() {
+      $('#locationsList').append('<li class="list-group-item">'+ LocationData[i][2] + '</li>');
+    });
+
+
+    google.maps.event.addListener(marker, 'click', function() {
+      infowindow.setContent(this.title);
+      infowindow.open(map, this);
+    });
   }
+  map.fitBounds(bounds);
 }
 google.maps.event.addDomListener(window, 'load', initialize);
 
