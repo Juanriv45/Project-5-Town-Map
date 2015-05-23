@@ -1,53 +1,40 @@
 
+  var Locations = ko.observableArray([
+    {lat:32.782877, lang:-96.783548, name: "Angry Dog"},
+    {lat:32.772802, lang:-96.831495, name: "Chicken Scratch"},
+    {lat:32.842388, lang:-96.772196, name: "Twisted Root"}
+  ]);
 
-var dallas = new google.maps.LatLng(32.7815617,-96.7928802);
 
-var LocationDatas = [
-    { name:"Angry Dog",
-      LatLng: new google.maps.LatLng(32.782877,-96.783548)
-    },
-    { name:"Chicken Scratch",
-      LatLng: new google.maps.LatLng(32.772802,-96.831495)
-    },
-    { name:"Twisted Root Burger Co",
-      LatLng: new google.maps.LatLng(32.842388,-96.772196)
+function ViewModel() {
+  var self = this;
+  self.LocationData = Locations;
+
+  function initialize() {
+
+    var map = new google.maps.Map(document.getElementById('map-canvas'));
+    var bounds = new google.maps.LatLngBounds();
+    var infowindow = new google.maps.InfoWindow();
+
+    for (var i in Locations()) {
+      var p = Locations()[i];
+      var latlng = new google.maps.LatLng(p.lat, p.lang);
+      bounds.extend(latlng);
+
+      var marker = new google.maps.Marker({
+        position: latlng,
+        map: map,
+        title: p.name
+      });
+
+      google.maps.event.addListener(marker, 'click', function() {
+        infowindow.setContent(this.title);
+        infowindow.open(map, this);
+      });
     }
-];
-
-var LocationData = [
-    [32.782877,-96.783548, "Angry Dog" ],
-    [32.772802,-96.831495, "Chicken Scratch" ],
-    [32.842388,-96.772196, "Twisted Root" ]
-];
-
-function initialize() {
-
-  var map = new google.maps.Map(document.getElementById('map-canvas'));
-  var bounds = new google.maps.LatLngBounds();
-  var infowindow = new google.maps.InfoWindow();
-
-  for (var i in LocationData) {
-    var p = LocationData[i];
-    var latlng = new google.maps.LatLng(p[0], p[1]);
-    bounds.extend(latlng);
-
-    var marker = new google.maps.Marker({
-      position: latlng,
-      map: map,
-      title: p[2]
-    });
-
-    $(document).ready( function() {
-      $('#locationsList').append('<li class="list-group-item">'+ LocationData[i][2] + '</li>');
-    });
-
-
-    google.maps.event.addListener(marker, 'click', function() {
-      infowindow.setContent(this.title);
-      infowindow.open(map, this);
-    });
+    map.fitBounds(bounds);
   }
-  map.fitBounds(bounds);
-}
-google.maps.event.addDomListener(window, 'load', initialize);
-
+  google.maps.event.addDomListener(window, 'load', initialize);
+};
+// Activates knockout.js
+ko.applyBindings(new ViewModel());

@@ -21,13 +21,13 @@
       </div>
       <div class="row">
         <div class="col-md-4">
-          <form data-bind="submit:requestData">
-            <label for="street">Street:</label> <input type="text" data-bind="value: streetStr">
-            <button type="submit">Submit</button>
+          <form>
+            <input type="text" placeholder="Filter">
           </form>
+          <br>
           <div>
-            <ul class="list-group" style="list-style-type:none">
-              <li id="locationsList"></li>
+            <ul class="list-group" style="list-style-type:none" data-bind="foreach: LocationData">
+              <li data-bind="text: name" class="list-group-item"></li>
             </ul>
           </div>
         </div>
