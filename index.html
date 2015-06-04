@@ -5,34 +5,33 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style type="text/css">
-      html, body, #map-canvas { height: 500px; width:100%; margin: 0; padding: 0;};
+      html, body, #map-canvas { height: 500px; width:100%; margin: 0; padding: 0;}
+      html {background: black}
+      div {color: white;}
     </style>
     <link href="css/bootstrap.min.css" rel="stylesheet">
 
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBPwcTuwlLneATJK1_7h1BpjHh_2QwU08k"></script>
 
   </head>
-  <body>
+  <body style="background-color: transparent">
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-12" align="center">
-          <h1>Town Map</h1>
+          <h1 style="color: white">Town Map</h1>
         </div>
       </div>
       <div class="row">
         <div class="col-md-4">
-          <form>
-            <input type="text" placeholder="Filter">
-          </form>
-          <br>
+          <input type="text" style="background-color:gray; color:white" placeholder="Filter" data-bind="textInput: filter, event: {keyup: popo}" >
           <div>
-            <ul class="list-group" style="list-style-type:none" data-bind="foreach: LocationData">
-              <li data-bind="text: name" class="list-group-item"></li>
+            <ul class="list-group" style="list-style-type:none" data-bind="foreach: availablePlace">
+              <li data-bind="text: name, visible:show" class="list-group-item" style="background-color: black"></li>
             </ul>
           </div>
         </div>
         <div class ="col-md-8">
-          <div  id="map-canvas"></div>
+          <div id="map-canvas"></div>
         </div>
       </div>
     </div>
