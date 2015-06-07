@@ -7,7 +7,6 @@
     <style type="text/css">
       html, body, #map-canvas { height: 500px; width:100%; margin: 0; padding: 0;}
       html {background: black}
-      div {color: white;}
     </style>
     <link href="css/bootstrap.min.css" rel="stylesheet">
 
@@ -17,21 +16,23 @@
   <body style="background-color: transparent">
     <div class="container-fluid">
       <div class="row">
-        <div class="col-md-12" align="center">
-          <h1 style="color: white">Town Map</h1>
+        <div class="col-md-12">
+          <h1 align="center" style="color: white; font-style: italic">Project #5 (Town Map)</h1>
         </div>
       </div>
       <div class="row">
-        <div class="col-md-4">
-          <input type="text" style="background-color:gray; color:white" placeholder="Filter" data-bind="textInput: filter, event: {keyup: popo}" >
+        <div class="col-md-4" style="color: white">
+          <input type="text" style="color:black" placeholder="Filter" data-bind="textInput: filter, event: {keyup: popo}" >
           <div>
             <ul class="list-group" style="list-style-type:none" data-bind="foreach: availablePlace">
               <li data-bind="text: name, visible:show" class="list-group-item" style="background-color: black"></li>
             </ul>
+            <h3 align="center" style="background: gray">Filter for information from Wikipedia</h3>
+            <ul class="wikiData" style="color: white"></ul>
           </div>
         </div>
         <div class ="col-md-8">
-          <div id="map-canvas"></div>
+          <div id="map-canvas" style="color: black"></div>
         </div>
       </div>
     </div>

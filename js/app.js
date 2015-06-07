@@ -1,31 +1,31 @@
 
   var locationModel = ko.observableArray([
-    {lat:32.782877,
-     lang:-96.783548,
-     name: "Angry Dog",
+    {lat: 32.747284,
+     lang:-97.094494,
+     name: "Dallas Cowboys",
      show : ko.observable(true)
     },
-    {lat:32.772802,
-     lang:-96.831495,
-     name: "Chicken Scratch",
+    {lat:32.791536,
+     lang:-96.810381,
+     name: "Dallas Mavericks",
      show : ko.observable(true)
     },
-    {lat:32.842388,
-     lang:-96.772196,
-     name: "Twisted Root",
+    {lat:32.751271,
+     lang:-97.082451,
+     name: "Texas Rangers",
      show : ko.observable(true)
     }
   ]);
 
 var markers = ko.observableArray();
-var availablePlace = ko.observableArray([]);
+var availablePlace = ko.observableArray();
 var map = new google.maps.Map(document.getElementById('map-canvas'));
 
 function ViewModel() {
+
   var self = this;
   self.locationData = locationModel;
   self.filter = ko.observableArray("");
-
 
   function initialize() {
 
@@ -38,7 +38,6 @@ function ViewModel() {
       var latlng = new google.maps.LatLng(p.lat, p.lang);
       bounds.extend(latlng);
       createMapMarker(p);
-      console.log(p);
 
       function createMapMarker (p){ //this function is to diplay Markers on Google Map for each data in model
 
@@ -54,9 +53,8 @@ function ViewModel() {
         markers().push(marker); //save the markers in array
 
         // infoWindows are the little helper windows that open when you click on Google Map
-
         var infoWindow = new google.maps.InfoWindow({
-          content: p.name + '<br><p style="text-align:center"><b>Congrats!!</b></p>'
+          content: p.name + '<p class="wikiData1">xxxx</p>'
         });
 
         google.maps.event.addListener(marker, 'click', function() {
@@ -87,13 +85,39 @@ function ViewModel() {
   };
   return (map_markers)
   };
-
+////////////////
+  //Wikipedia API Request
+for (i=0; i < locationModel().length; i++){
+  locationModel()[i].wikiRequest = function(){
+        var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + this.name + '&format=json&callback=wikiCallback'
+        console.log(this.name);
+        var wikiRequestTimeout = setTimeout(function() {
+            $('.wikiData').text("Failed to get wikipedia resources");
+        }, 8000);
+        $.ajax( {
+            url: wikiUrl ,
+            dataType:"jsonp",
+            //jsonp: "callback",
+            success: function (response) {
+                var articleList = response[1];
+                for (var i = 0; i < 3 ; i++) {
+                    articleStr = articleList[i];
+                    var url = 'http://en.wikipedia.org/wiki/' + articleStr;
+                    $('.wikiData').append('<li><a href="' + url + '">'+ articleStr + '</a></li>');
+                };
+                clearTimeout(wikiRequestTimeout);
+            }
+        } );
+      };
+    };
+//////////////////////
   popo =  function(){
     if(this.filter().length > 0){
       var arr;
 
       for(item in availablePlace()){ //display off on all listed view
         availablePlace()[item].show(false)
+        $(".wikiData" ).empty();
       };
 
       arr = $.grep(availablePlace(), function(n){ //arr is what is going to displayed in listview
@@ -106,9 +130,11 @@ function ViewModel() {
 
       for(item in arr){ //what is left after filtering out, turn them on display
         arr[item].show(true);
+        arr[item].wikiRequest();
       };
     } else {
       setAllMap(map)
+      $(".wikiData" ).empty();
       for (item in availablePlace()){
         availablePlace()[item].show(true)
       };
