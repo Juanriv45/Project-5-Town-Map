@@ -22,7 +22,7 @@
       </div>
       <div class="row">
         <div class="col-md-4" style="color: white">
-          <input type="text" style="color:black" placeholder="Filter" data-bind="textInput: filter, event: {keyup: popo}" >
+          <input type="text" style="color:black" placeholder="Filter" data-bind="textInput: filter, event: {input: filterAll}" >
           <div>
             <ul class="list-group" style="list-style-type:none" data-bind="foreach: availablePlace">
               <li data-bind="text: name, visible:show" class="list-group-item" style="background-color: black"></li>
