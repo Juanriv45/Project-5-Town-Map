@@ -17,8 +17,7 @@
     }
   ]);
 
-var markers = ko.observableArray();
-var availablePlace = ko.observableArray();
+var markers = [];
 var map = new google.maps.Map(document.getElementById('map-canvas'));
 
 function ViewModel() {
@@ -26,7 +25,7 @@ function ViewModel() {
   var self = this;
   self.locationData = locationModel;
   self.filter = ko.observableArray();
-
+  self.availablePlace = ko.observableArray();
   function initialize() {
 
     var bounds = new google.maps.LatLngBounds();
@@ -38,23 +37,23 @@ function ViewModel() {
       bounds.extend(latlng);
       createMarker(p);
 
+      var infoWindow = new google.maps.InfoWindow({
+      });
+
 // create markers for each of the locations
       function createMarker (p){
-        availablePlace.push(p);
+        self.availablePlace.push(p);
         var marker = new google.maps.Marker({
           map: map,
           position: latlng,
           title: p.name
         });
 //markers are pushed into an array
-        markers().push(marker);
+        markers.push(marker);
 //creates infowindow for each marker
-        var infoWindow = new google.maps.InfoWindow({
-          content: p.name
-        });
-
         google.maps.event.addListener(marker, 'click', function() {
           infoWindow.open(map, marker);
+          infoWindow.setContent(p.name);
         });
       };
     };
@@ -64,8 +63,8 @@ function ViewModel() {
 
 //adds all markers back
   function resetMap(map) {
-    for (var i = 0; i < markers().length; i++) {
-    markers()[i].setMap(map);
+    for (var i = 0; i < markers.length; i++) {
+    markers[i].setMap(map);
     };
   };
 //compares the filtered data with the marker data in order to see which markers should be shown
@@ -112,18 +111,18 @@ function ViewModel() {
     if(this.filter().length > 0){
       var arr;
 
-      for(item in availablePlace()){
-        availablePlace()[item].show(false)
+      for(item in self.availablePlace()){
+        self.availablePlace()[item].show(false)
         $(".wikiData").empty();
       };
 
-      arr = $.grep(availablePlace(), function(n){
+      arr = $.grep(self.availablePlace(), function(n){
         return (n.name.toLowerCase().indexOf(self.filter().toLowerCase()) !== -1);
       })
 
       console.log(arr)
 
-      filter_twoArrays(arr,markers());
+      filter_twoArrays(arr,markers);
 //what is left after filtering out will be displayed and the request for the wikipedia API is activated.
       for(item in arr){
         arr[item].show(true);
@@ -132,8 +131,8 @@ function ViewModel() {
     } else {
       resetMap(map)
       $(".wikiData").empty();
-      for (item in availablePlace()){
-        availablePlace()[item].show(true)
+      for (item in self.availablePlace()){
+        self.availablePlace()[item].show(true)
       };
     };
   };
