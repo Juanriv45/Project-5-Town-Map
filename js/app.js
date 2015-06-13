@@ -18,7 +18,6 @@
   ]);
 
 var markers = ko.observableArray();
-var availablePlace = ko.observableArray();
 var map = new google.maps.Map(document.getElementById('map-canvas'));
 
 function ViewModel() {
@@ -40,7 +39,7 @@ function ViewModel() {
 
 // create markers for each of the locations
       function createMarker (p){
-        availablePlace.push(p);
+        self.availablePlace.push(p);
         var marker = new google.maps.Marker({
           map: map,
           position: latlng,
@@ -112,12 +111,12 @@ function ViewModel() {
     if(this.filter().length > 0){
       var arr;
 
-      for(item in availablePlace()){
-        availablePlace()[item].show(false)
+      for(item in self.availablePlace()){
+        self.availablePlace()[item].show(false)
         $(".wikiData").empty();
       };
 
-      arr = $.grep(availablePlace(), function(n){
+      arr = $.grep(self.availablePlace(), function(n){
         return (n.name.toLowerCase().indexOf(self.filter().toLowerCase()) !== -1);
       })
 
@@ -132,8 +131,8 @@ function ViewModel() {
     } else {
       resetMap(map)
       $(".wikiData").empty();
-      for (item in availablePlace()){
-        availablePlace()[item].show(true)
+      for (item in self.availablePlace()){
+        self.availablePlace()[item].show(true)
       };
     };
   };
