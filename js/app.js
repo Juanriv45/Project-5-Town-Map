@@ -26,12 +26,12 @@ function ViewModel() {
   self.locationData = locationModel;
   self.filter = ko.observableArray();
   self.availablePlace = ko.observableArray();
+
   function initialize() {
 
     var bounds = new google.maps.LatLngBounds();
-    var infowindow = new google.maps.InfoWindow();
 
-    for (var i in self.locationData()) {
+    for (i=0; i < self.locationData().length; i++) {
       var p = self.locationData()[i];
       var latlng = new google.maps.LatLng(p.lat, p.lang);
       bounds.extend(latlng);
@@ -40,34 +40,53 @@ function ViewModel() {
       var infoWindow = new google.maps.InfoWindow({
       });
 
-// create markers for each of the locations
-      function createMarker (p){
+      // create markers for each of the locations
+      function createMarker(p){
         self.availablePlace.push(p);
         var marker = new google.maps.Marker({
           map: map,
           position: latlng,
           title: p.name
         });
-//markers are pushed into an array
+        //markers are pushed into an array
         markers.push(marker);
-//creates infowindow for each marker
+        //creates infowindow for each marker & the Wikipedia API request
         google.maps.event.addListener(marker, 'click', function() {
           infoWindow.open(map, marker);
-          infoWindow.setContent(p.name);
+
+          var wikiData;
+          var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + p.name + '&format=json&callback=wikiCallback';
+          //If there is an error, an error message will be created
+          var wikiRequestTimeout = setTimeout(function() {
+            wikiData = "Failed to get wikipedia resources";
+          }, 8000);
+          $.ajax({
+            url: wikiUrl ,
+            dataType:"jsonp",
+            success: function (response) {
+              var articleList = response[1];
+
+              for (var i = 0; i < 3 ; i++) {
+                var articleStr = articleList[i];
+                var url = 'http://en.wikipedia.org/wiki/' + articleStr;
+                infoWindow.setContent(p.name +='<li><a href="' + url + '">'+ articleStr + '</a></li>');
+              };
+            clearTimeout(wikiRequestTimeout);
+            }
+          });
         });
       };
     };
     map.fitBounds(bounds);
   };
   google.maps.event.addDomListener(window, 'load', initialize);
-
-//adds all markers back
+  //adds all markers back
   function resetMap(map) {
     for (var i = 0; i < markers.length; i++) {
     markers[i].setMap(map);
     };
   };
-//compares the filtered data with the marker data in order to see which markers should be shown
+  //compares the filtered data with the marker data in order to see which markers should be shown
   function filter_twoArrays(filtered,map_markers){
     var i=0, j=0;
     resetMap(null);
@@ -78,61 +97,30 @@ function ViewModel() {
       };
     };
   };
-  return (map_markers)
+  return (map_markers);
   };
-
-//Wikipedia API Request
-  for (i=0; i < locationModel().length; i++){
-    locationModel()[i].wikiRequest = function(){
-      var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + this.name + '&format=json&callback=wikiCallback'
-      console.log(this.name);
-//If there is an error, an error message will be created
-      var wikiRequestTimeout = setTimeout(function() {
-          $('.wikiData').text("Failed to get wikipedia resources");
-        }, 8000);
-      $.ajax({
-        url: wikiUrl ,
-        dataType:"jsonp",
-        success: function (response) {
-          var articleList = response[1];
-
-          for (var i = 0; i < 3 ; i++) {
-            articleStr = articleList[i];
-            var url = 'http://en.wikipedia.org/wiki/' + articleStr;
-            $('.wikiData').append('<li><a href="' + url + '">'+ articleStr + '</a></li>');
-          };
-          clearTimeout(wikiRequestTimeout);
-        }
-      });
-    };
-  };
-//this function will adjust the view to show only what is filtered
+  //this function will adjust the view to show only what is filtered
   filterAll =  function(){
     if(this.filter().length > 0){
       var arr;
 
-      for(item in self.availablePlace()){
-        self.availablePlace()[item].show(false)
-        $(".wikiData").empty();
+      for (i = 0; i < self.availablePlace().length; i++) {
+        self.availablePlace()[i].show(false);
       };
 
       arr = $.grep(self.availablePlace(), function(n){
         return (n.name.toLowerCase().indexOf(self.filter().toLowerCase()) !== -1);
-      })
-
-      console.log(arr)
+      });
 
       filter_twoArrays(arr,markers);
-//what is left after filtering out will be displayed and the request for the wikipedia API is activated.
-      for(item in arr){
-        arr[item].show(true);
-        arr[item].wikiRequest();
+      //what is left after filtering out will be displayed and the request for the wikipedia API is activated.
+      for (i = 0; i < arr.length; i++) {
+        arr[i].show(true);
       };
     } else {
-      resetMap(map)
-      $(".wikiData").empty();
-      for (item in self.availablePlace()){
-        self.availablePlace()[item].show(true)
+      resetMap(map);
+      for (i = 0; i < self.availablePlace().length; i++){
+        self.availablePlace()[i].show(true);
       };
     };
   };
