@@ -1,4 +1,4 @@
-//Data for where then major Dallas sports teams play
+///Data for where then major Dallas sports teams play
   var locationModel = ko.observableArray([
     {lat: 32.747284,
      lang:-97.094494,
@@ -28,7 +28,41 @@ function ViewModel() {
   self.availablePlace = ko.observableArray();
 
   function initialize() {
-
+    // create markers for each of the locations
+    function createMarker(p){
+      self.availablePlace.push(p);
+      var marker = new google.maps.Marker({
+        map: map,
+        position: latlng,
+        title: p.name
+      });
+      //markers are pushed into an array
+      markers.push(marker);
+      //creates infowindow for each marker & the Wikipedia API request
+      google.maps.event.addListener(marker, 'click', function() {
+        infoWindow.open(map, marker);
+        map.setCenter(marker.position);
+        var wikiData;
+        var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + p.name + '&format=json&callback=wikiCallback';
+        //If there is an error, an error message will be created
+        var wikiRequestTimeout = setTimeout(function() {
+          wikiData = "Failed to get wikipedia resources";
+        }, 8000);
+        $.ajax({
+          url: wikiUrl ,
+          dataType:"jsonp",
+          success: function (response) {
+            var articleList = response[1];
+            for (var i = 0; i < 3 ; i++) {
+              var articleStr = articleList[i];
+              var url = 'http://en.wikipedia.org/wiki/' + articleStr;
+              infoWindow.setContent(p.name +='<li><a href="' + url + '">'+ articleStr + '</a></li>');
+            };
+            clearTimeout(wikiRequestTimeout);
+          }
+        });
+      });
+    };
     var bounds = new google.maps.LatLngBounds();
 
     for (i=0; i < self.locationData().length; i++) {
@@ -39,43 +73,6 @@ function ViewModel() {
 
       var infoWindow = new google.maps.InfoWindow({
       });
-
-      // create markers for each of the locations
-      function createMarker(p){
-        self.availablePlace.push(p);
-        var marker = new google.maps.Marker({
-          map: map,
-          position: latlng,
-          title: p.name
-        });
-        //markers are pushed into an array
-        markers.push(marker);
-        //creates infowindow for each marker & the Wikipedia API request
-        google.maps.event.addListener(marker, 'click', function() {
-          infoWindow.open(map, marker);
-
-          var wikiData;
-          var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + p.name + '&format=json&callback=wikiCallback';
-          //If there is an error, an error message will be created
-          var wikiRequestTimeout = setTimeout(function() {
-            wikiData = "Failed to get wikipedia resources";
-          }, 8000);
-          $.ajax({
-            url: wikiUrl ,
-            dataType:"jsonp",
-            success: function (response) {
-              var articleList = response[1];
-
-              for (var i = 0; i < 3 ; i++) {
-                var articleStr = articleList[i];
-                var url = 'http://en.wikipedia.org/wiki/' + articleStr;
-                infoWindow.setContent(p.name +='<li><a href="' + url + '">'+ articleStr + '</a></li>');
-              };
-            clearTimeout(wikiRequestTimeout);
-            }
-          });
-        });
-      };
     };
     map.fitBounds(bounds);
   };
