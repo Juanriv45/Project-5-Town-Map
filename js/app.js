@@ -57,12 +57,12 @@ function ViewModel() {
               var articleStr = articleList[i];
               var url = 'http://en.wikipedia.org/wiki/' + articleStr;
               infoWindow.setContent(p.name +='<li><a href="' + url + '">'+ articleStr + '</a></li>');
-            };
+            }
             clearTimeout(wikiRequestTimeout);
           }
         });
       });
-    };
+    }
     var bounds = new google.maps.LatLngBounds();
 
     for (i=0; i < self.locationData().length; i++) {
@@ -73,16 +73,16 @@ function ViewModel() {
 
       var infoWindow = new google.maps.InfoWindow({
       });
-    };
+    }
     map.fitBounds(bounds);
-  };
+  }
   google.maps.event.addDomListener(window, 'load', initialize);
   //adds all markers back
   function resetMap(map) {
     for (var i = 0; i < markers.length; i++) {
     markers[i].setMap(map);
-    };
-  };
+    }
+  }
   //compares the filtered data with the marker data in order to see which markers should be shown
   function filter_twoArrays(filtered,map_markers){
     var i=0, j=0;
@@ -91,11 +91,11 @@ function ViewModel() {
       for(j=0; j<filtered.length;j++){
         if (filtered[j].name == map_markers[i].title){
         map_markers[i].setMap(map);
-      };
-    };
-  };
+      }
+    }
+  }
   return (map_markers);
-  };
+  }
   //this function will adjust the view to show only what is filtered
   filterAll =  function(){
     if(this.filter().length > 0){
@@ -103,7 +103,7 @@ function ViewModel() {
 
       for (i = 0; i < self.availablePlace().length; i++) {
         self.availablePlace()[i].show(false);
-      };
+      }
 
       arr = $.grep(self.availablePlace(), function(n){
         return (n.name.toLowerCase().indexOf(self.filter().toLowerCase()) !== -1);
@@ -113,14 +113,14 @@ function ViewModel() {
       //what is left after filtering out will be displayed and the request for the wikipedia API is activated.
       for (i = 0; i < arr.length; i++) {
         arr[i].show(true);
-      };
+      }
     } else {
       resetMap(map);
       for (i = 0; i < self.availablePlace().length; i++){
         self.availablePlace()[i].show(true);
-      };
-    };
+      }
+    }
   };
-};
+}
 // Activates knockout.js
 ko.applyBindings(new ViewModel());
